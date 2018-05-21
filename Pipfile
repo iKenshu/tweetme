@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+name = "pypi"
+verify_ssl = true
+
+[packages]
+django = "==1.10.3"
+"psycopg2" = "*"
+django-crispy-forms = "*"
+djangorestframework = "*"
+markdown = "*"
+django-filter = "*"
+
+[requires]
+python_version = "3.6"
+
+[dev-packages]

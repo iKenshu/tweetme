@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block script %}
+    <script>
+
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+
+        $(document).ready(function(){
+
+            let query = getParameterByName('q')
+            let tweetList = []
+
+            function parseTweets(){
+
+                if (tweetList == 0){
+                    $('#tweet-container').text("No tweets currently found")
+
+                } else {
+                    $.each(tweetList, function(key, value){
+                        let tweetKey = key
+                        let tweetContent = value.content
+                        let tweetUser = value.user
+                        $('#tweet-container').append(
+                            '<div class="media"><div class="media-body">' +
+                            tweetContent +
+                            '<br> via ' +
+                            tweetUser.username +
+                            ' | ' +
+                            ' <a href="#">view</a>' +
+                            '</div></div><hr>'
+                        )
+
+                    })
+                }
+
+
+            }
+
+            $.ajax({
+                url: '/api/tweets',
+                method: 'GET',
+                data: {
+                    "q": query,
+                },
+                success: function(data){
+                    tweetList = data
+                    parseTweets()
+                },
+                error: function(data){
+                    console.log('error')
+                    console.log(data)
+                }
+            })
+
+
+        })
+    </script>
+{% endblock script %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-sm-3 col-xs-12">
+            <h1>{{ request.user }}</h1>
+        </div>
+        <div class="col-sm-9">        
+            {% if not request.GET %}
+                <div class="row">
+                    {% include 'tweets/form.html' with form=create_form action_url=create_url btn_title='Tweet' id='tweet-form' %}
+                </div>
+                <hr>
+            {% endif %}
+
+            <div id="tweet-container">
+    
+            </div>
+        </div>
+    </div>
+{% endblock content %}
