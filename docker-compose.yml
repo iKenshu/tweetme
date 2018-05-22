@@ -16,7 +16,7 @@ services:
         depends_on:
             - db
         environment:
-            - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+            - DJANGO_SETTINGS_MODULE=tweetme.settings.production
             - SECRET_KEY=${SECRET_KEY}
 volumes:
     postgres_data:
