@@ -6,7 +6,7 @@
             <h1>{{ object.username }}</h1>
             <p>Followers: {{ object.followed_by.all.count}}</p>
             <p>
-                <a href="{{ object.profile.get_follow_url }}" class="btn btn-link">
+                <a href="{{ object.profiles.get_follow_url }}" class="btn btn-link">
                 {% if following %} Unfollow {% else %} Follow {% endif %}
                 </a>
             </p>
