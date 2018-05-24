@@ -24,15 +24,16 @@
                 let dataDisplay = tweetValue.date_display
                 let tweetContent = tweetValue.content
                 let tweetUser = tweetValue.user
-                let tweetFormHtml = '<div class="media"><div class="media-body">' +
+                let tweetFormHtml = "<div class='media'><div class='media-body'>" +
                     tweetContent +
-                    '<br> via ' +
-                    tweetUser.username +
-                    ' | ' +
+                    "<br> via " +
+                    "<a href='" + tweetUser.url + "'>" +
+                    tweetUser.username + "</a>" +
+                    " | " +
                     dataDisplay +
-                    ' | ' +
-                    ' <a href="#">view</a>' +
-                    '</div></div><hr>'
+                    " | " +
+                    " <a href='#'>view</a>" +
+                    "</div></div><hr>"
 
                 if (prepend == true){
                     $('#tweet-container').prepend(tweetFormHtml)
