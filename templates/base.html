@@ -124,50 +124,55 @@
                 })
             }
 
-            function attachTweet(tweetValue, prepend, retweet){
-
-                let dateDisplay = tweetValue.date_display
-                let tweetContent = tweetValue.content
-                let tweetUser = tweetValue.user
-                let tweetFormHtml;
+            function formatTweet(tweetValue){
                 let verb = 'Like'
 
                 if(tweetValue.did_like){
                     verb = 'Unlike'
                 }
 
+                let preContent;
+                let container;
+                let tweetContent;
+                let isReply = tweetValue.reply;
 
-                if (retweet && tweetValue.parent){
-                    let mainTweet = tweetValue.parent
+                if (tweetValue.parent && !isReply){
+                    tweetValue = tweetValue.parent
+                    preContent = "<span class='gray-color'>Retweet via " + tweetValue.user.username + " on " + tweetValue.date_display + 
+                    "</span><br>"
 
-                    tweetFormHtml = "<div class='media'><div class='media-body'>" +
-                    "<span class='gray-color'>Retweet via " + tweetUser.username + " on " + dateDisplay + "</span><br>"
-                    mainTweet.content +
-                    "<br> via " +
-                    "<a href='" + mainTweet.user.url + "'>" +
-                    mainTweet.user.username + "</a>" +
-                    " | " +
-                    mainTweet.date_display +
-                    " | " +
-                    "<a href='/tweets/" + mainTweet.id + "'>view</a> | " +
-                    "<a class='retweetBtn href='/tweets/" + tweetValue.id + "/retweet'>Retweet</a> |" +
-                    "<a class='tweet-like' href='' data-id=" + tweetValue.id +"> Like(" + tweetValue.likes + ") </a>" +
-                    "</div></div><hr>"
-
-                } else {
-                    tweetFormHtml = "<div class='media'><div class='media-body'>" +
-                    tweetContent +
-                    "<br> via " +
-                    "<a href='" + tweetUser.url + "'>" +
-                    tweetUser.username + "</a>" +
-                    " | " +
-                    dateDisplay +
-                    " | " +
-                   "<a href='/tweets/" + tweetValue.id + "'>view</a> | " + 
-                   "<a class='retweetBtn' href='/tweets/" + tweetValue.id + "/retweet/'>Retweet</a> |" +
-                    "<a class='tweet-like' href='' data-id=" + tweetValue.id +"> "+ verb +"(" + tweetValue.likes + ") </a>" +
-                    "</div></div><hr>"
+                } else if (tweetValue.parent && isReply) {
+                    preContent = "<span class='gray-color'>Reply to @" + tweetValue.parent.user.username  + "</span><br>"
+                    
                 }
+
+
+                tweetContent = tweetValue.content +
+                    "<br> via " +
+                    "<a href='" + tweetValue.user.url + "'>" +
+                    tweetValue.user.username + "</a>" +
+                    " | " +
+                    tweetValue.date_display +
+                    " | " +
+                    "<a href='/tweets/" + tweetValue.id + "'>view</a> | " + 
+                    "<a class='retweetBtn' href='/tweets/" + tweetValue.id + "/retweet/'>Retweet</a> |" +
+                    "<a class='tweet-like' href='' data-id=" + tweetValue.id +"> "+ verb +"(" + tweetValue.likes + ") </a>"
+
+                if(preContent){
+                    container = "<div class='media'><div class='media-body'>" + preContent + tweetContent + "</div></div><hr>" 
+                } else {
+                    container = "<div class='media'><div class='media-body'>" + tweetContent + "</div></div><hr>" 
+                }
+
+                return container
+
+            }
+
+
+            function attachTweet(tweetValue, prepend, retweet){
+
+                tweetFormHtml = formatTweet(tweetValue)
+
                 if (prepend == true){
                     tweetContainer.prepend(tweetFormHtml)
 
