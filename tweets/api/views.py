@@ -47,6 +47,18 @@ class TweetCreateAPIView(generics.CreateAPIView):
         serializer.save(user=self.request.user)
 
 
+class TweetDetailAPIView(generics.ListAPIView):
+    queryset = Tweet.objects.all()
+    serializer_class = TweetModelSerializer
+    permissions_classes = [permissions.AllowAny]
+    pagination_class = StandardResultsPagination
+
+    def get_queryset(self, *args, **kwargs):
+        tweet_id = self.kwargs.get('pk')
+        qs = Tweet.objects.filter(pk=tweet_id)
+        return qs
+
+
 class TweetListAPIView(generics.ListAPIView):
     serializer_class = TweetModelSerializer
     pagination_class = StandardResultsPagination

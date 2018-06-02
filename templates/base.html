@@ -50,7 +50,7 @@
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
 
-        function loadTweetContainer(tweetContainerID) {
+        function loadTweetContainer(tweetContainerID, fetcOneID) {
 
             let query = getParameterByName('q')
             let tweetList = []
@@ -118,7 +118,8 @@
                 let username = this_.attr('data-user')
 
                 $('#replyModal').modal({})
-
+                $('#replyModal').after("<input type='hidden' value='" + parentID + "' name='parent_id'>")
+                $('#replyModal').after("<input type='hidden' value='" + true + "' name='reply'>")
                 $('#replyModal textarea').val('@' + username + ' ')
                 $('#replyModal').on('shown.bs.modal', function(){
                     $('textarea').focus()
@@ -250,7 +251,36 @@
                 })
             }
 
-            fetchTweets()
+            function fetchSingle(fetcOneID) {
+                let fetchDetailUrl = '/api/tweets/' + fetcOneID + '/'
+
+                $.ajax({
+                    url: fetchDetailUrl,
+                    method: 'GET',
+                    success: function(data){
+                        console.log(data)
+                        tweetList = data.results
+                        // if (data.next) {
+                        //     nextTweetUrl = data.next
+                        // } else {
+                        //     $("#loadmore").css("display", "none")
+                        // }
+                        parseTweets()
+                        updateHashLinks()
+                    },
+                    error: function(data){
+                        console.log('error')
+                        console.log(data)
+                    }
+                })
+            }
+
+            if(fetcOneID) {
+                fetchSingle(fetcOneID)
+            } else {
+                fetchTweets()
+            }
+
 
             $("#loadmore").click(function (event){
                 event.preventDefault()
@@ -262,7 +292,7 @@
             let charsStar = 140
             let charsCurrent = 0
 
-            $(".tweet-form").append("<span id=tweetsCharsLeft>" + charsStar + "</span>")
+            $(".tweet-form").append("<span id=tweetsCharsLeft style='margin-left: 20px'>" + charsStar + " left </span>")
 
             $(".tweet-form textarea").keyup(function(event) {
                 let tweetValue = $(this).val()
