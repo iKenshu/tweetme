@@ -18,6 +18,10 @@
         .gray-color {
             color: #ccc;
         }
+
+        .media-focus {
+            background-color: #fafafa;
+        }
     </style>
 
     <title>{% block title %} Tweetme {% endblock title %}</title>
@@ -50,7 +54,7 @@
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
 
-        function loadTweetContainer(tweetContainerID, fetcOneID) {
+        function loadTweetContainer(tweetContainerID, fetchOneID) {
 
             let query = getParameterByName('q')
             let tweetList = []
@@ -118,8 +122,8 @@
                 let username = this_.attr('data-user')
 
                 $('#replyModal').modal({})
-                $('#replyModal').after("<input type='hidden' value='" + parentID + "' name='parent_id'>")
-                $('#replyModal').after("<input type='hidden' value='" + true + "' name='reply'>")
+                $('#replyModal textarea').after("<input type='hidden' value='" + parentID + "' name='parent_id'>")
+                $('#replyModal textarea').after("<input type='hidden' value='" + true + "' name='reply'>")
                 $('#replyModal textarea').val('@' + username + ' ')
                 $('#replyModal').on('shown.bs.modal', function(){
                     $('textarea').focus()
@@ -147,6 +151,20 @@
                 let container;
                 let tweetContent;
                 let isReply = tweetValue.reply;
+                let replyID = tweetValue.id;
+                if(tweetValue.parent) {
+                    replyID = tweetValue.parent.id
+                }
+
+                let openingContainerDiv = "<div class='media'>"
+                if(tweetValue.id == fetchOneID) {
+                    openingContainerDiv = "<div class='media media-focus'>"
+
+                    setTimeout(function(){
+                        $('.media-focus').css('background-color', "#fff")
+                    }, 2000)
+                }
+
 
                 if (tweetValue.parent && !isReply){
                     tweetValue = tweetValue.parent
@@ -174,12 +192,12 @@
                     "<a href='/tweets/" + tweetValue.id + "'>view</a> | " + 
                     "<a class='retweetBtn' href='/tweets/" + tweetValue.id + "/retweet/'>Retweet</a> |" +
                     "<a class='tweet-like' href='' data-id='" + tweetValue.id + "'> "+ verb +"(" + tweetValue.likes + ") </a> | " +
-                    "<a class='tweet-reply' href='' data-user='" + tweetValue.user.username + "' data-id='" + tweetValue.id +"'>Reply</a>"
+                    "<a class='tweet-reply' href='' data-user='" + tweetValue.user.username + "' data-id='" + replyID +"'>Reply</a>"
 
                 if(preContent){
-                    container = "<div class='media'><div class='media-body'>" + preContent + tweetContent + "</div></div><hr>" 
+                    container = openingContainerDiv + "<div class='media-body'>" + preContent + tweetContent + "</div></div><hr>" 
                 } else {
-                    container = "<div class='media'><div class='media-body'>" + tweetContent + "</div></div><hr>" 
+                    container = openingContainerDiv + "<div class='media-body'>" + tweetContent + "</div></div><hr>" 
                 }
 
                 return container
@@ -251,8 +269,8 @@
                 })
             }
 
-            function fetchSingle(fetcOneID) {
-                let fetchDetailUrl = '/api/tweets/' + fetcOneID + '/'
+            function fetchSingle(fetchOneID) {
+                let fetchDetailUrl = '/api/tweets/' + fetchOneID + '/'
 
                 $.ajax({
                     url: fetchDetailUrl,
@@ -260,11 +278,6 @@
                     success: function(data){
                         console.log(data)
                         tweetList = data.results
-                        // if (data.next) {
-                        //     nextTweetUrl = data.next
-                        // } else {
-                        //     $("#loadmore").css("display", "none")
-                        // }
                         parseTweets()
                         updateHashLinks()
                     },
@@ -275,8 +288,8 @@
                 })
             }
 
-            if(fetcOneID) {
-                fetchSingle(fetcOneID)
+            if(fetchOneID) {
+                fetchSingle(fetchOneID)
             } else {
                 fetchTweets()
             }
