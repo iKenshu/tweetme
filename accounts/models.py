@@ -34,6 +34,14 @@ class UserProfileManager(models.Manager):
             return True
         return False
 
+    def recommended(self, user, limit_to=10):
+        print(user)
+        profile = user.profiles
+        following = profile.following.all()
+        following = profile.get_following()
+        qs = self.get_queryset().exclude(user__in=following).exclude(id=profile.id).order_by("?")[:limit_to]
+        return qs
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
@@ -54,11 +62,11 @@ class UserProfile(models.Model):
 
     def get_follow_url(self):
         return reverse_lazy('profiles:follow',
-                            kwargs={'username': self.user})
+                            kwargs={'username': self.user.username})
 
     def get_absolute_url(self):
         return reverse_lazy('profiles:detail',
-                            kwargs={'username': self.user})
+                            kwargs={'username': self.user.username})
 
 
 def post_save_user_receiver(sender, instance, created, *args, **kwargs):

@@ -9,15 +9,18 @@
 {% endblock script %}
 
 {% block content %}
+
 <div class="row">
         <div class="col-sm-3 col-xs-12">
             <h1>{{ object.username }}</h1>
+
             <p>Followers: {{ object.followed_by.all.count}}</p>
             <p>
                 <a href="{{ object.profiles.get_follow_url }}" class="btn btn-link">
                 {% if following %} Unfollow {% else %} Follow {% endif %}
                 </a>
             </p>
+
             <h1>Following {{ object.profiles.get_following.count }}</h1>
             {% for user in object.profiles.get_following %}
                 <a href="/{{ user.username }}">{{ user.username}}</a>
